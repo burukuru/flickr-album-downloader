@@ -1,0 +1,6 @@
+[flickr]
+api_key = abc123
+api_secret = def456
+user_id = 123456N01
+flickr_url = 'https://www.flickr.com/photos/USERNAME/'
+dest_dir = '/home/USERNAME/Pictures/flickr/'
