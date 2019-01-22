@@ -42,6 +42,37 @@ class FAD():
             print (f"Creation of directory {dest_dir} succeeded.")
             pass
 
+    def download_no_album(self):
+        self.flickr_etree.authenticate_via_browser(perms='read')
+        photos = self.flickr_etree.photos.getNotInSet(extras='url_o')
+
+        # Create album directory
+        album_dir = os.path.join(self.dest_dir, 'Untitled')
+        self.make_dir(album_dir)
+
+        # Create index to order photos
+        index = 1
+        try:
+            os.remove(os.path.join(album_dir, 'album.csv'))
+        except:
+            pass
+        csvfile = open(os.path.join(album_dir, 'album.csv'), 'a')
+        csvwriter = csv.writer(csvfile)
+
+        for photo in photos.find('photos'):
+            url = photo.get('url_o')
+            print(url)
+            url_ = urllib.parse.urlparse(url)
+            filename = str(index).zfill(3) + '_' + os.path.basename(url_.path)
+            title = photo.get('title')
+
+            # Write photo title to CSV file
+            csvwriter.writerow([str(index).zfill(3), filename, title])
+            full_dest_path = os.path.join(album_dir, filename)
+            # Download file
+            self.download_photo(url, album_dir, full_dest_path)
+            index += 1
+
     def download_all_albums(self):
         # Create parent dir
         self.make_dir(self.dest_dir)
@@ -111,6 +142,7 @@ class FAD():
 def main():
     fad = FAD()
     fad.download_all_albums()
+    fad.download_no_album()
 
 if __name__ == '__main__':
     main()
